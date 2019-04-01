@@ -81,7 +81,7 @@ namespace Dr.Common.Helpers
         /// <param name="str">待加密的字符串</param>
         /// <param name="encryptKey">加密密钥,要求为8个字符</param>
         /// <returns>返回加密后的字符串</returns>
-        public static string DESEncrypt(string str, string key)
+        public static string DESEncrypt(string str, string key,CipherMode model = CipherMode.CBC,PaddingMode padding = PaddingMode.PKCS7)
         {
             if (string.IsNullOrWhiteSpace(str))
             {
@@ -100,8 +100,8 @@ namespace Dr.Common.Helpers
             {
                 des.Key = keyBytes;
                 des.IV = ivBytes;
-                des.Mode = CipherMode.CBC;
-                des.Padding = PaddingMode.PKCS7;
+                des.Mode = model;
+                des.Padding = padding;
                 using (var encryptor = des.CreateEncryptor())
                 {
                     return Convert.ToBase64String(encryptor.TransformFinalBlock(toEncryptBytes, 0, toEncryptBytes.Length));
@@ -115,7 +115,7 @@ namespace Dr.Common.Helpers
         /// <param name="str">待解密的字符串</param>
         /// <param name="key">解密密钥，要求为8个字符</param>
         /// <returns>返回解密后的字符串</returns>
-        public static string DESDecrypt(string str, string key)
+        public static string DESDecrypt(string str, string key, CipherMode model = CipherMode.CBC, PaddingMode padding = PaddingMode.PKCS7)
         {
             if (string.IsNullOrWhiteSpace(str))
             {
@@ -134,8 +134,8 @@ namespace Dr.Common.Helpers
             {
                 des.Key = keyBytes;
                 des.IV = ivBytes;
-                des.Mode = CipherMode.CBC;
-                des.Padding = PaddingMode.PKCS7;
+                des.Mode = model;
+                des.Padding = padding;
                 using (var decryptor = des.CreateDecryptor())
                 {
                     return Encoding.UTF8.GetString(decryptor.TransformFinalBlock(toDecryptBytes, 0, toDecryptBytes.Length));
@@ -153,7 +153,7 @@ namespace Dr.Common.Helpers
         /// <param name="str">待加密字符串</param>
         /// <param name="key">密钥</param>
         /// <returns>返回加密后字符串</returns>
-        public static string AESEncrypt(string str, string key)
+        public static string AESEncrypt(string str, string key, CipherMode model = CipherMode.CBC, PaddingMode padding = PaddingMode.PKCS7)
         {
             if (string.IsNullOrWhiteSpace(str))
             {
@@ -171,8 +171,8 @@ namespace Dr.Common.Helpers
             using (Aes aes=Aes.Create())
             {
                 aes.Key = keyBytes;
-                aes.Mode = CipherMode.CBC;
-                aes.Padding = PaddingMode.PKCS7;
+                aes.Mode = model;
+                aes.Padding = padding;
 
                 using (var encryptor = aes.CreateEncryptor())
                 {
@@ -187,7 +187,7 @@ namespace Dr.Common.Helpers
         /// <param name="str">待解密的字符串</param>
         /// <param name="key">密钥</param>
         /// <returns>返回解密后字符串</returns>
-        public static string AESDecrypt(string str, string key)
+        public static string AESDecrypt(string str, string key, CipherMode model = CipherMode.CBC, PaddingMode padding = PaddingMode.PKCS7)
         {
             if (string.IsNullOrWhiteSpace(str))
             {
@@ -205,8 +205,8 @@ namespace Dr.Common.Helpers
             using (Aes aes = Aes.Create())
             {
                 aes.Key = keyBytes;
-                aes.Mode = CipherMode.CBC;
-                aes.Padding = PaddingMode.PKCS7;
+                aes.Mode =model;
+                aes.Padding = padding;
 
                 using (var decryptor = aes.CreateDecryptor())
                 {
@@ -223,20 +223,22 @@ namespace Dr.Common.Helpers
         /// Base64 加密
         /// </summary>
         /// <param name="str">待加密的字符串</param>
+        /// <param name="encoding">编码方式默认ASCII</param>
         /// <returns></returns>
-        public static string Base64Encrypt(string str,string codeType= "ASCII")
+        public static string Base64Encrypt(string str,Encoding encoding=null)
         {
-            return Convert.ToBase64String(Encoding.GetEncoding(codeType).GetBytes(str));
+            return Convert.ToBase64String((encoding??Encoding.ASCII).GetBytes(str));
         }
 
         /// <summary>
         /// Base64 解密
         /// </summary>
         /// <param name="base64str">待解密的字符串</param>
+        /// <param name="encoding">编码方式默认ASCII</param>
         /// <returns></returns>
-        public static string Base64Decrypt(string base64str,string codeType = "ASCII")
+        public static string Base64Decrypt(string base64str, Encoding encoding = null)
         {
-            return Encoding.GetEncoding(codeType).GetString(Convert.FromBase64String(base64str));
+            return (encoding ?? Encoding.ASCII).GetString(Convert.FromBase64String(base64str));
         }
         
         #endregion
