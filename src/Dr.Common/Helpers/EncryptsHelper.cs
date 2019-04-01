@@ -80,6 +80,8 @@ namespace Dr.Common.Helpers
         /// </summary>
         /// <param name="str">待加密的字符串</param>
         /// <param name="encryptKey">加密密钥,要求为8个字符</param>
+        /// <param name="model">运算模式</param>
+        /// <param name="padding">加密模式</param>
         /// <returns>返回加密后的字符串</returns>
         public static string DESEncrypt(string str, string key,CipherMode model = CipherMode.CBC,PaddingMode padding = PaddingMode.PKCS7)
         {
@@ -114,6 +116,8 @@ namespace Dr.Common.Helpers
         /// </summary>
         /// <param name="str">待解密的字符串</param>
         /// <param name="key">解密密钥，要求为8个字符</param>
+        /// <param name="model">运算模式</param>
+        /// <param name="padding">加密模式</param>
         /// <returns>返回解密后的字符串</returns>
         public static string DESDecrypt(string str, string key, CipherMode model = CipherMode.CBC, PaddingMode padding = PaddingMode.PKCS7)
         {
@@ -152,6 +156,8 @@ namespace Dr.Common.Helpers
         /// </summary>
         /// <param name="str">待加密字符串</param>
         /// <param name="key">密钥</param>
+        /// <param name="model">运算模式</param>
+        /// <param name="padding">加密模式</param>
         /// <returns>返回加密后字符串</returns>
         public static string AESEncrypt(string str, string key, CipherMode model = CipherMode.CBC, PaddingMode padding = PaddingMode.PKCS7)
         {
@@ -186,6 +192,8 @@ namespace Dr.Common.Helpers
         /// </summary>
         /// <param name="str">待解密的字符串</param>
         /// <param name="key">密钥</param>
+        /// <param name="model">运算模式</param>
+        /// <param name="padding">加密模式</param>
         /// <returns>返回解密后字符串</returns>
         public static string AESDecrypt(string str, string key, CipherMode model = CipherMode.CBC, PaddingMode padding = PaddingMode.PKCS7)
         {
