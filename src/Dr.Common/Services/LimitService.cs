@@ -29,6 +29,15 @@ namespace Dr.Common.Services
 {
     /// <summary>
     /// 限流服务
+    /// <code>
+    /// <![CDATA[
+    ///     private static LimitService limitService = new Lazy<LimitService>(() => new LimitService(100, 1));
+    ///     if(limitService.value.IsContinue)
+    ///     {
+    ///         // to do 
+    ///     }
+    /// ]]>  
+    /// </code>
     /// </summary>
     public class LimitService
     {
@@ -40,7 +49,7 @@ namespace Dr.Common.Services
         private int _totalCount;
 
         /// <summary>
-        /// 获取实例
+        /// 获取默认实例
         /// </summary>
         public static LimitService Instance = Singleton<LimitService>.Instance;
 
