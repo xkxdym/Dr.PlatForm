@@ -67,6 +67,23 @@ namespace Dr.Common.Extensions
         }
 
         /// <summary>
+        /// 当前时间转为时间戳 (自 1970-01-01)
+        /// </summary>
+        /// <returns></returns>
+        public static long ToUnixTimeStamp(this DateTime time)
+        {
+            try
+            {
+                DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1));
+                return (long)(time - startTime).TotalSeconds;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+        /// <summary>
         /// 转换为中文星期
         /// </summary>
         /// <param name="dateTime">时间</param>

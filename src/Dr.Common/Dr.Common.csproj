@@ -72,6 +72,7 @@
     <Compile Include="Cache\Web\MemoryCache.cs" />
     <Compile Include="Data\DataConvert.cs" />
     <Compile Include="Data\DataValidationHelper.cs" />
+    <Compile Include="Data\XmlDictionary.cs" />
     <Compile Include="Excel\NPOI\ExcelCommon.cs" />
     <Compile Include="Excel\NPOI\ExcelExportHelper.cs" />
     <Compile Include="Excel\NPOI\ExcelImportHelper.cs" />

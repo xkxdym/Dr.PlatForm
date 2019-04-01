@@ -293,24 +293,7 @@ namespace Dr.Common.Data
             }
             return DateTime.MinValue;
         }
-
-        /// <summary>
-        /// 当前时间转为时间戳
-        /// </summary>
-        /// <returns></returns>
-        public static long ToUnixTime(DateTime time)
-        {
-            try
-            {
-                DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(1970, 1, 1));
-                return (long)(time - startTime).TotalSeconds;
-            }
-            catch
-            {
-                return 0;
-            }
-        }
-
+        
         /// <summary>
         /// RMB金额转大写
         /// </summary>

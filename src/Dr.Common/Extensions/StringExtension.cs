@@ -59,24 +59,63 @@ namespace Dr.Common.Extensions
             return string.IsNullOrWhiteSpace(str);
         }
 
-
         /// <summary>
-        /// md5加密
+        /// MD5 加密
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public static string ToMd5(this string str)
+        public static string ToMD5(this string str)
         {
             return EncryptsHelper.Md5(str);
+        }
+
+        /// <summary>
+        /// SHA1 加密
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string ToSHA1(this string str)
+        {
+            return EncryptsHelper.SHA1(str);
+        }
+
+        /// <summary>
+        /// HMAC-SHA256 加密
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string ToHMAC_SHA256(this string str)
+        {
+            return EncryptsHelper.HMAC_SHA256(str);
+        }
+
+        /// <summary>
+        /// SHA256 加密
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string ToSHA256(this string str)
+        {
+            return EncryptsHelper.SHA256(str);
+        }
+        
+        /// <summary>
+        /// SHA512 加密
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string ToSHA512(this string str)
+        {
+            return EncryptsHelper.SHA512(str);
         }
 
         /// <summary>
         /// 获取GUID
         /// </summary>
         /// <returns></returns>
-        public static string GetGuid()
+        public static string GetGuid(this string str)
         {
-            return Guid.NewGuid().ToString().Replace("-", string.Empty);
+            return Guid.NewGuid().ToString("N");
         }
 
         /// <summary>
@@ -257,7 +296,7 @@ namespace Dr.Common.Extensions
         /// </summary>
         /// <param name="unCompressedString">要压缩的字符串</param>
         /// <returns></returns>
-        public static string ZipString(string unCompressedString)
+        public static string ZipString(this string unCompressedString)
         {
             byte[] bytData = Encoding.UTF8.GetBytes(unCompressedString);
             MemoryStream ms = new MemoryStream();
@@ -273,7 +312,7 @@ namespace Dr.Common.Extensions
         /// </summary>
         /// <param name="unCompressedString">要解压的字符串</param>
         /// <returns></returns>
-        public static string UnzipString(string unCompressedString)
+        public static string UnzipString(this string unCompressedString)
         {
            StringBuilder uncompressedString = new StringBuilder();
             byte[] writeData = new byte[4096];

@@ -53,14 +53,14 @@ namespace Dr.Common.Helpers
 
         #endregion
 
-        #region SHA1 加密
+        #region SHA 加密
 
         /// <summary>
         ///  SHA1 加密
         /// </summary>
         /// <param name="str">待加密的字符串</param>
         /// <returns>返回加密后的字符串</returns>
-        public string SHA1(string str)
+        public static string SHA1(string str)
         {
             if (string.IsNullOrWhiteSpace(str))
             {
@@ -71,6 +71,60 @@ namespace Dr.Common.Helpers
                 return BitConverter.ToString(sha1.ComputeHash(Encoding.UTF8.GetBytes(str))).Replace("-", string.Empty);
             }
         }
+
+        /// <summary>
+        /// SHA256 加密
+        /// </summary>
+        /// <param name="str">待加密的字符串</param>
+        /// <returns>返回加密后的字符串</returns>
+        public static string SHA256(string str)
+        {
+            if (string.IsNullOrWhiteSpace(str))
+            {
+                return string.Empty;
+            }
+            using (var sha256= System.Security.Cryptography.SHA256.Create())
+            {
+                return BitConverter.ToString(sha256.ComputeHash(Encoding.UTF8.GetBytes(str))).Replace("-", string.Empty);
+            }
+        }
+
+        /// <summary>
+        /// SHA256 加密
+        /// </summary>
+        /// <param name="str">待加密的字符串</param>
+        /// <returns>返回加密后的字符串</returns>
+        public static string HMAC_SHA256(string str)
+        {
+            if (string.IsNullOrWhiteSpace(str))
+            {
+                return string.Empty;
+            }
+            using (var sha256 = System.Security.Cryptography.HMACSHA256.Create())
+            {
+                return BitConverter.ToString(sha256.ComputeHash(Encoding.UTF8.GetBytes(str))).Replace("-", string.Empty);
+            }
+        }
+
+        
+
+        /// <summary>
+        /// SHA512 加密
+        /// </summary>
+        /// <param name="str">待加密的字符串</param>
+        /// <returns>返回加密后的字符串</returns>
+        public static string SHA512(string str)
+        {
+            if (string.IsNullOrWhiteSpace(str))
+            {
+                return string.Empty;
+            }
+            using (var sha512 = System.Security.Cryptography.SHA512.Create())
+            {
+                return BitConverter.ToString(sha512.ComputeHash(Encoding.UTF8.GetBytes(str))).Replace("-", string.Empty);
+            }
+        }
+
         #endregion
 
         #region DES 加密 解密
