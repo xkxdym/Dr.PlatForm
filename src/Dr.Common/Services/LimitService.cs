@@ -18,6 +18,7 @@
 
 #endregion
 
+using Dr.Common.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,6 +38,12 @@ namespace Dr.Common.Services
         private DateTime?[] requestDateArr = null;
 
         private int _totalCount;
+
+        /// <summary>
+        /// 获取实例
+        /// </summary>
+        public static LimitService Instance = Singleton<LimitService>.Instance;
+
         /// <summary>
         ///限制的请求数量（默认1000）
         /// </summary>
