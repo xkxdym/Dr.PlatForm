@@ -19,7 +19,6 @@
 #endregion
 
 using Dr.Common.Data;
-using Dr.Common.Encrypts;
 using Dr.Common.Helpers;
 using System;
 using System.Collections.Generic;
@@ -57,6 +56,41 @@ namespace Dr.Common.Extensions
         public static bool IsNullOrWhiteSpace(this string str)
         {
             return string.IsNullOrWhiteSpace(str);
+        }
+
+        /// <summary>
+        /// left截取字符串
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        public static string Left(this string str, int length)
+        {
+            return str.Substring(0, length > str.Length ? str.Length : length);
+        }
+
+        /// <summary>
+        /// Right截取字符串
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        public static string Right(this string str, int length)
+        {
+            return str.Substring(length > str.Length ? 0 : str.Length - length);
+        }
+
+        /// <summary>
+        /// mid截取字符串
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="start"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        public static string Mid(this string str, int start, int length)
+        {
+            int iStartPoint = start > str.Length ? str.Length : start;
+            return str.Substring(iStartPoint, iStartPoint + length > str.Length ? str.Length - iStartPoint : length);
         }
 
         /// <summary>
@@ -241,22 +275,21 @@ namespace Dr.Common.Extensions
         /// <summary>
         /// HTML转纯文本
         /// </summary>
-        public static string HtmlToText(this string value)
+        public static string HtmlToText(this string str)
         {
             string regexstr = @"(&(#)?.+;)|(<[^>]*>)";
-            return Regex.Replace(value, regexstr, "", RegexOptions.IgnoreCase);
+            return Regex.Replace(str, regexstr, string.Empty, RegexOptions.IgnoreCase);
         }
 
         /// <summary>
         /// 过滤HTML中的不安全标签
         /// </summary>
-        public static string HtmlFilter(this string value)
+        public static string HtmlFilter(this string str)
         {
-
-            value = Regex.Replace(value, @"(\<|\s+)on([a-z]+\s?=)", "$1_$2", RegexOptions.IgnoreCase);
-            value = Regex.Replace(value, @"(DOCTYPE|html|base|head|meta|form|button|optgroup|canvas|command|noframes|output|keygen|datalist|option|select|textarea|input|link|iframe|frameset|frame|form|applet|embed|layer|param|meta|object|script|noscript)([\s|:|>])+", "$1_$2", RegexOptions.IgnoreCase);
-            value = Regex.Replace(value, @"javascript|eval", "", RegexOptions.IgnoreCase);
-            return value;
+            str = Regex.Replace(str, @"(\<|\s+)on([a-z]+\s?=)", "$1_$2", RegexOptions.IgnoreCase);
+            str = Regex.Replace(str, @"(DOCTYPE|html|base|head|meta|form|button|optgroup|canvas|command|noframes|output|keygen|datalist|option|select|textarea|input|link|iframe|frameset|frame|form|applet|embed|layer|param|meta|object|script|noscript)([\s|:|>])+", "$1_$2", RegexOptions.IgnoreCase);
+            str = Regex.Replace(str, @"javascript|eval", "", RegexOptions.IgnoreCase);
+            return str;
         }
 
         /// <summary>
@@ -337,6 +370,18 @@ namespace Dr.Common.Extensions
             }
             s.Close();
             return uncompressedString.ToString();
+        }
+
+        /// <summary>
+        ///字符串编码转换
+        /// </summary>
+        public static string ConvertEncode(this string str, Encoding fromEncoding,Encoding toEncoding)
+        {
+            if (str.IsNullOrWhiteSpace() || fromEncoding == null || toEncoding == null)
+            {
+                return str;
+            }
+            return toEncoding.GetString(Encoding.Convert(fromEncoding, toEncoding, fromEncoding.GetBytes(str)));
         }
     }
 }

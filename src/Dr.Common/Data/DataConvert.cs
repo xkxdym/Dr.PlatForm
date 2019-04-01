@@ -275,7 +275,7 @@ namespace Dr.Common.Data
         /// 时间戳转为时间
         /// </summary>
         /// <returns></returns>
-        public static DateTime ToDateTimeForTimestamp(this string timestamp, DateTime? defaultValue = null)
+        public static DateTime ToDateTimeFromTimestamp(this string timestamp, DateTime? defaultValue = null)
         {
             try
             {

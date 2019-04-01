@@ -80,6 +80,10 @@
     <Compile Include="Extensions\ExceptionExtension.cs" />
     <Compile Include="Extensions\StringExtension.cs" />
     <Compile Include="Extensions\TExtension.cs" />
+    <Compile Include="FTP\DirectoryListParser.cs" />
+    <Compile Include="FTP\FileListStyle.cs" />
+    <Compile Include="FTP\FileStruct.cs" />
+    <Compile Include="FTP\FTPHelper.cs" />
     <Compile Include="Helpers\EncryptsHelper.cs" />
     <Compile Include="Helpers\EnumHelper.cs" />
     <Compile Include="Helpers\ImageHelper.cs" />

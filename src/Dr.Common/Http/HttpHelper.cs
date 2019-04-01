@@ -18,6 +18,7 @@
 
 #endregion
 
+using Dr.Common.Helpers;
 using Dr.Common.Http.Model;
 using System;
 using System.Collections.Generic;
@@ -45,7 +46,7 @@ namespace Dr.Common.Http
         /// <summary>
         /// 获取实例
         /// </summary>
-        public static HttpHelper Instance => new HttpHelper();
+        public static HttpHelper Instance => Singleton<HttpHelper>.Instance;
 
         /// <summary>
         /// 获取请求结果
