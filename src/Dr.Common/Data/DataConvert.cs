@@ -25,9 +25,9 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -293,7 +293,7 @@ namespace Dr.Common.Data
             }
             return DateTime.MinValue;
         }
-        
+
         /// <summary>
         /// RMB金额转大写
         /// </summary>
@@ -307,7 +307,7 @@ namespace Dr.Common.Data
 
             return r;
         }
-        
+
         /// <summary> 
         /// 序列化对象为XML
         /// </summary> 
@@ -423,6 +423,17 @@ namespace Dr.Common.Data
         /// <returns></returns>
         public static T ToModel<T>(this Dictionary<string, string> dic)
         {
+            return ToModel<T>(dic.ToDictionary(m => m.Key, v =>v.Value as object));
+        }
+
+        /// <summary>
+        /// 字典转成对应的模型
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dic"></param>
+        /// <returns></returns>
+        public static T ToModel<T>(this Dictionary<string, object> dic)
+        {
             T model;
             try
             {
@@ -430,36 +441,72 @@ namespace Dr.Common.Data
 
                 if (dic == null)
                 {
-                    throw new ArgumentNullException(nameof(dic));
+                    return model;
                 }
 
+                #region 属性
                 var props = typeof(T).GetProperties();
-
-                foreach (var item in props)
+                if (props != null)
                 {
-                    try
+                    foreach (var item in props)
                     {
-                        var name = item.Name;
-                        if (dic.Keys.Any(a => a.ToLower() == name.ToLower()))
+                        try
                         {
-                            var dic_Value = dic.FirstOrDefault(f => f.Key.ToLower() == name.ToLower()).Value;
-
-                            try
+                            var name = item.Name.ToLower();
+                            if (dic.Keys.Any(a => a.ToLower() == name))
                             {
-                                var type = Nullable.GetUnderlyingType(item.PropertyType) ?? item.PropertyType;
-                                item.SetValue(model, Convert.ChangeType(dic_Value, type));
-                            }
-                            catch
-                            {
-                                item.SetValue(model, dic_Value);
+                                var dic_Value = dic.FirstOrDefault(f => f.Key.ToLower() == name).Value;
+                                try
+                                {
+                                    item.SetValue(model, ChangeType(dic_Value, item.PropertyType), null);
+                                }
+                                catch
+                                {
+                                    item.SetValue(model, dic_Value);
+                                }
                             }
                         }
-                    }
-                    catch
-                    {
-                        continue;
+                        catch
+                        {
+                            continue;
+                        }
                     }
                 }
+                #endregion
+
+                #region 字段
+
+                var fields = typeof(T).GetFields(BindingFlags.Public);
+                if (fields != null)
+                {
+                    foreach (var item in fields)
+                    {
+                        try
+                        {
+                            var name = item.Name.ToLower();
+
+                            if (dic.Keys.Any(a => a.ToLower() == name))
+                            {
+                                var dic_Value = dic.FirstOrDefault(f => f.Key.ToLower() == name).Value;
+
+                                try
+                                {
+                                    item.SetValue(model, ChangeType(dic_Value, item.FieldType));
+                                }
+                                catch
+                                {
+                                    item.SetValue(model, dic_Value);
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            continue;
+                        }
+                    }
+                }
+
+                #endregion
             }
             catch
             {
@@ -467,6 +514,238 @@ namespace Dr.Common.Data
             }
             return model;
         }
+
+        /// <summary>
+        /// 根据 name 或 JsonPropertyAttribute 转成对应的模型
+        /// </summary>
+        /// <typeparam name="T">转换后的模型类型</typeparam>
+        /// <typeparam name="O">要转换的模型类型</typeparam>
+        /// <param name="orgModel">要转换的模型数据</param>
+        /// <returns>转换后的模型数据</returns>
+        public static T ToModel<T, O>(this O orgModel)
+            where T : class
+        {
+            T model;
+            try
+            {
+                model = Activator.CreateInstance<T>();
+
+                if (orgModel == null)
+                {
+                    return model;
+                }
+
+                Type orgType = typeof(O);
+
+                var orgProperties = orgType.GetProperties();
+                var orgFileds = orgType.GetFields();
+
+                if (orgProperties == null && orgFileds == null)
+                {
+                    return model;
+                }
+
+                #region 属性
+                var props = typeof(T).GetProperties();
+                if (props != null)
+                {
+                    foreach (var item in props)
+                    {
+                        try
+                        {
+                            if (!item.CanWrite)
+                            {
+                                continue;
+                            }
+
+                            object value = null;
+
+                            var mapList = GetMapList(item);
+
+                            var o_p = orgProperties.FirstOrDefault(a => a.CanRead && mapList.Exists(m => m.ToLower() == a.Name.ToLower()));
+                            if (o_p != null)
+                            {
+                                value = o_p.GetValue(orgModel, null);
+                            }
+                            else
+                            {
+                                var o_f = orgFileds.FirstOrDefault(a => mapList.Exists(m => m.ToLower() == a.Name.ToLower()));
+                                if (o_f != null)
+                                {
+                                    value = o_f.GetValue(orgModel);
+                                }
+                            }
+                            try
+                            {
+                                item.SetValue(model, ChangeType(value, item.PropertyType), null);
+                            }
+                            catch
+                            {
+                                item.SetValue(model, value, null);
+                            }
+                        }
+                        catch
+                        {
+                            continue;
+                        }
+                    }
+                }
+                #endregion
+
+                #region 字段
+                var fields = typeof(T).GetFields(BindingFlags.Public);
+                if (fields != null)
+                {
+                    foreach (var item in fields)
+                    {
+                        try
+                        {
+                            var mapList = GetMapList(item);
+
+                            object value = null;
+                            var o_p = orgProperties.FirstOrDefault(a => a.CanRead && mapList.Exists(m => m.ToLower() == a.Name.ToLower()));
+                            if (o_p != null)
+                            {
+                                value = o_p.GetValue(orgModel, null);
+                            }
+                            else
+                            {
+                                var o_f = orgFileds.FirstOrDefault(a => mapList.Exists(m => m.ToLower() == a.Name.ToLower()));
+                                if (o_f != null)
+                                {
+                                    value = o_f.GetValue(orgModel);
+                                }
+                            }
+
+                            try
+                            {
+                                item.SetValue(model, ChangeType(value, item.FieldType));
+                            }
+                            catch
+                            {
+                                item.SetValue(model, value);
+                            }
+
+                        }
+                        catch
+                        {
+                            continue;
+                        }
+                    }
+                }
+                #endregion
+
+            }
+            catch
+            {
+                model = default(T);
+            }
+            return model;
+        }
+
+        /// <summary>
+        /// 类型转换
+        /// </summary>
+        /// <param name="value">原数据</param>
+        /// <param name="type">目标数据类型</param>
+        /// <returns></returns>
+        public static object ChangeType(object value, Type type)
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+            try
+            {
+                if (value.GetType().Equals(type))
+                {
+                    return value;
+                }
+                if (type.IsGenericType)
+                {
+                    if (value == null)
+                    {
+                        return Activator.CreateInstance(type);
+                    }
+                    if (type.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+                    {
+                        Convert.ChangeType(value, Nullable.GetUnderlyingType(type));
+                    }
+                }
+                if (value!=null&&type.IsEnum)
+                {
+                    if (value is string)
+                    {
+                        return Enum.Parse(type, value as string,true);
+                    }
+                    else
+                    {
+                        return Enum.ToObject(type, value);
+                    }
+                }
+                if(value is string)
+                {
+                    if (type.Equals(typeof(Guid)))
+                    {
+                        return Guid.Parse(value as string);
+                    }
+                    if (type.Equals(typeof(Version)))
+                    {
+                        return Version.Parse(value as string);
+                    }
+                }
+                if (!(value is IConvertible))
+                {
+                    return value;
+                }
+                return Convert.ChangeType(value, type);
+            }
+            catch
+            {
+                try
+                {
+                    return Convert.ChangeType(value, Nullable.GetUnderlyingType(type) ?? type);
+                }
+                catch
+                { }
+            }
+
+            return value;
+        }
+
+        private static List<string> GetMapList(MemberInfo item)
+        {
+            List<string> mapList = new List<string>();
+            try
+            {
+                if (item == null)
+                {
+                    return mapList;
+                }
+
+                mapList.Add(item.Name);
+
+                var jsonprop = item.GetCustomAttributes(typeof(JsonPropertyAttribute), false);
+                if (jsonprop != null)
+                {
+                    foreach (var map in jsonprop)
+                    {
+                        var m = map as JsonPropertyAttribute;
+                        if (m != null && !string.IsNullOrWhiteSpace(m.PropertyName))
+                        {
+                            if (!mapList.Contains(m.PropertyName))
+                            {
+                                mapList.Add(m.PropertyName);
+                            }
+                        }
+                    }
+                }
+            }
+            catch
+            { }
+            return mapList;
+        }
+
 
         /// <summary>
         /// DataTable 转 List<T>
@@ -563,7 +842,7 @@ namespace Dr.Common.Data
                 return null;
             }
         }
-        
+
         /// <summary>
         /// IEnumerable<T> 转 DataSet
         /// </summary>
@@ -580,7 +859,7 @@ namespace Dr.Common.Data
 
                 return ds;
             }
-            catch 
+            catch
             {
                 return null;
             }
