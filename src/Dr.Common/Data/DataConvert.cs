@@ -462,7 +462,7 @@ namespace Dr.Common.Data
                                 }
                                 catch
                                 {
-                                    item.SetValue(model, dic_Value);
+                                    item.SetValue(model, dic_Value,null);
                                 }
                             }
                         }

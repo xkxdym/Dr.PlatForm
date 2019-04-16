@@ -68,8 +68,8 @@ namespace Dr.Common.Extensions
                                     continue;
                                 }
                                 var propType = prop.PropertyType;
-                                var newValue = prop.GetValue(newModel);
-                                var oldValue = prop.GetValue(oldModel);
+                                var newValue = prop.GetValue(newModel,null);
+                                var oldValue = prop.GetValue(oldModel,null);
 
                                 if (newValue == null && oldValue == null)
                                 {

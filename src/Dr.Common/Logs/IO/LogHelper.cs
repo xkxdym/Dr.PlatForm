@@ -59,7 +59,7 @@ namespace Dr.Common.Logs.IO
         {
             try
             {
-                Task.Run(() =>
+                Task.Factory.StartNew(() =>
                 {
                     lock (_lock)
                     {

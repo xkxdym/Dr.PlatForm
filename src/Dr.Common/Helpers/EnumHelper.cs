@@ -21,6 +21,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 
 namespace Dr.Common.Helpers
@@ -45,7 +46,7 @@ namespace Dr.Common.Helpers
             FieldInfo fieldInfo = enumType.GetField(e.ToString());
             if (fieldInfo != null)
             {
-                var attr = fieldInfo.GetCustomAttribute<DescriptionAttribute>();
+                var attr = fieldInfo.GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault() as DescriptionAttribute;
                 if (attr != null && !string.IsNullOrEmpty(attr.Description))
                 {
                     return attr.Description;
@@ -75,7 +76,7 @@ namespace Dr.Common.Helpers
 
                 FieldInfo fieldInfo = type.GetField(key);
 
-                var attr = fieldInfo.GetCustomAttribute<DescriptionAttribute>();
+                var attr = fieldInfo.GetCustomAttributes(typeof(DescriptionAttribute),false).FirstOrDefault() as DescriptionAttribute;
                 if (attr != null && !string.IsNullOrEmpty(attr.Description))
                 {
                     key = attr.Description;
@@ -103,7 +104,7 @@ namespace Dr.Common.Helpers
 
                 FieldInfo fieldInfo = type.GetField(key);
 
-                var attr = fieldInfo.GetCustomAttribute<DescriptionAttribute>();
+                var attr = fieldInfo.GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault() as DescriptionAttribute;
                 if (attr != null && !string.IsNullOrEmpty(attr.Description))
                 {
                     key = attr.Description;
