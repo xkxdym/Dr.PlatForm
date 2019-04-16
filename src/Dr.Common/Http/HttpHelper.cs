@@ -26,7 +26,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -239,7 +238,7 @@ namespace Dr.Common.Http
         private void SetPostData(HttpItem item)
         {
             //验证在得到结果时是否有传入数据
-            if (item.Method == HttpMethod.Post)
+            if (item.Method == "GET")
             {
                 byte[] buffer = null;
                 switch (item.PostDataType)

@@ -20,7 +20,6 @@
 
 using System;
 using System.Net;
-using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
@@ -39,7 +38,7 @@ namespace Dr.Common.Http.Model
         /// <summary>
         /// 请求方法 默认是GET
         /// </summary>
-        public HttpMethod Method { get; set; } = HttpMethod.Get;
+        public string Method { get; set; } ="GET";
 
         /// <summary>
         /// 请求的Header
