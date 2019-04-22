@@ -29,10 +29,19 @@ namespace Dr.Common.Data
 {
     /// <summary>
     /// 支持XML序列化的字典
+    /// <para>
+    ///     默认是Element，如果是Attribute 需要执行TKey+"@attr",如
+    ///     {"id@attr":"1"}
+    /// </para>
     /// </summary>
     [Serializable]
     public class XmlDictionary<TKey, TValue> : Dictionary<TKey, TValue>, IXmlSerializable
     {
+        /// <summary>
+        /// 以 attributeTag 为结尾的则需要序列化为Attribute
+        /// </summary>
+        public const string attributeTag = "@attr";
+
         #region 构造方法
         public XmlDictionary() { }
 
@@ -63,8 +72,15 @@ namespace Dr.Common.Data
             xr.Read();
             while (xr.NodeType != XmlNodeType.EndElement)
             {
-                Add((TKey)Convert.ChangeType(xr.Name, typeof(TKey)), (TValue)Convert.ChangeType(xr.ReadElementString(), typeof(TValue)));
-                xr.MoveToContent();
+                try
+                {
+                    var value = xr.ReadElementString();
+                    Add((TKey)Convert.ChangeType(xr.Name, typeof(TKey)), (TValue)Convert.ChangeType(value, typeof(TValue)));
+                }
+                finally
+                {
+                    xr.MoveToContent();
+                }
             }
             xr.ReadEndElement();
         }
@@ -77,9 +93,26 @@ namespace Dr.Common.Data
         {
             foreach (var key in Keys)
             {
-                xw.WriteStartElement(key.ToString());
-                xw.WriteValue(this[key]);
-                xw.WriteEndElement();
+                try
+                {
+                    var _key = key.ToString();
+                    if (_key.EndsWith(attributeTag))
+                    {
+                        xw.WriteStartAttribute(_key.Replace(attributeTag, string.Empty));
+                        xw.WriteValue(this[key]);
+                        xw.WriteEndAttribute();
+                    }
+                    else
+                    {
+                        xw.WriteStartElement(key.ToString());
+                        xw.WriteValue(this[key]);
+                        xw.WriteEndElement();
+                    }
+                }
+                catch
+                {
+                    continue;
+                }
             }
         }
     }
