@@ -18,6 +18,7 @@
 
 #endregion
 
+using Dr.Common.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -69,13 +70,14 @@ namespace Dr.Common.Data
             {
                 return;
             }
+            XmlSerializer keySerializer = new XmlSerializer(typeof(TKey));
+
             xr.Read();
             while (xr.NodeType != XmlNodeType.EndElement)
             {
                 try
                 {
-                    var value = xr.ReadElementString();
-                    Add((TKey)Convert.ChangeType(xr.Name, typeof(TKey)), (TValue)Convert.ChangeType(value, typeof(TValue)));
+                    Add((TKey)Convert.ChangeType(xr.LocalName, typeof(TKey)), (TValue)Convert.ChangeType(xr.ReadElementString(), typeof(TValue)));
                 }
                 finally
                 {
@@ -91,28 +93,50 @@ namespace Dr.Common.Data
         /// <param name="xw"></param>
         public void WriteXml(XmlWriter xw)
         {
-            foreach (var key in Keys)
+            try
             {
-                try
+                //attribute
+                foreach (var key in Keys)
                 {
-                    var _key = key.ToString();
-                    if (_key.EndsWith(attributeTag))
+                    try
                     {
-                        xw.WriteStartAttribute(_key.Replace(attributeTag, string.Empty));
-                        xw.WriteValue(this[key]);
-                        xw.WriteEndAttribute();
+                        var _key = key.ToString();
+                        if (_key.EndsWith(attributeTag))
+                        {
+                            xw.WriteStartAttribute(_key.Replace(attributeTag, string.Empty));
+                            xw.WriteValue(this[key]);
+                            xw.WriteEndAttribute();
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        xw.WriteStartElement(key.ToString());
-                        xw.WriteValue(this[key]);
-                        xw.WriteEndElement();
+                        ex.AddLog();
+                        continue;
                     }
                 }
-                catch
+                //element
+                foreach (var key in Keys)
                 {
-                    continue;
+                    try
+                    {
+                        var _key = key.ToString();
+                        if (!_key.EndsWith(attributeTag))
+                        {
+                            xw.WriteStartElement(key.ToString());
+                            xw.WriteValue(this[key]);
+                            xw.WriteEndElement();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ex.AddLog();
+                        continue;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                ex.AddLog();
             }
         }
     }
