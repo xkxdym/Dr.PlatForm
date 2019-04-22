@@ -123,7 +123,14 @@ namespace Dr.Common.Data
                         if (!_key.EndsWith(attributeTag))
                         {
                             xw.WriteStartElement(key.ToString());
-                            xw.WriteValue(this[key]);
+                            if (typeof(IXmlSerializable).IsAssignableFrom(this[key].GetType()))
+                            {
+                                ((IXmlSerializable)this[key]).WriteXml(xw);
+                            }
+                            else
+                            {
+                                xw.WriteValue(this[key]);
+                            }
                             xw.WriteEndElement();
                         }
                     }
