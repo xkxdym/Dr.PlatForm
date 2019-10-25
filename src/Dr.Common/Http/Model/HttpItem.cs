@@ -38,7 +38,7 @@ namespace Dr.Common.Http.Model
         /// <summary>
         /// 请求方法 默认是GET
         /// </summary>
-        public string Method { get; set; } ="GET";
+        public HttpMethod Method { get; set; } = HttpMethod.GET;
 
         /// <summary>
         /// 请求的Header

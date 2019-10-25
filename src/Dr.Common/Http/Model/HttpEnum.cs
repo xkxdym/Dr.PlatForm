@@ -61,4 +61,13 @@ namespace Dr.Common.Http.Model
         /// </summary>
         StringAndByte
     }
+
+    /// <summary>
+    /// 请求方法
+    /// </summary>
+    public enum HttpMethod
+    {
+        GET,
+        POST
+    }
 }
