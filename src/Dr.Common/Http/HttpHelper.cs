@@ -238,7 +238,7 @@ namespace Dr.Common.Http
         private void SetPostData(HttpItem item)
         {
             //验证在得到结果时是否有传入数据
-            if (item.Method == "GET")
+            if (item.Method == HttpMethod.GET)
             {
                 byte[] buffer = null;
                 switch (item.PostDataType)
