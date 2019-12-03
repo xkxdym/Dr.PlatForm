@@ -29,6 +29,21 @@ namespace Dr.Common.Helpers
         where T:class,new ()
     {
         private static Lazy<T> _instance = new Lazy<T>();
-        public static T Instance => _instance.Value;
+        private static T t = null;
+        private static object _lock = new object();
+        public static T Instance
+        {
+            get
+            {
+                if (t == null)
+                {
+                    lock (_lock)
+                    {
+                        t = _instance.Value;
+                    }
+                }
+                return t;
+            }
+        }
     }
 }
