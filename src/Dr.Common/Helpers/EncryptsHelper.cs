@@ -225,11 +225,13 @@ namespace Dr.Common.Helpers
             {
                 throw new ArgumentException("AES密钥要求为16/24/32个字符");
             }
-
+            //默认密钥向量
+            byte[] ivBytes = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x13, 0x25, 0x37, 0x49, 0x50, 0xAC, 0xBE, 0xDF };
             byte[] toEncryptBytes = Encoding.UTF8.GetBytes(str);
 
-            using (Aes aes=Aes.Create())
+            using (Aes aes = Aes.Create())
             {
+                aes.IV = ivBytes;
                 aes.Key = keyBytes;
                 aes.Mode = model;
                 aes.Padding = padding;
@@ -261,13 +263,15 @@ namespace Dr.Common.Helpers
             {
                 throw new ArgumentException("AES密钥要求为16/24/32个字符");
             }
-
+            //默认密钥向量
+            byte[] ivBytes = { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF, 0x13, 0x25, 0x37, 0x49, 0x50, 0xAC, 0xBE, 0xDF };
             byte[] toDecryptBytes = Convert.FromBase64String(str);
 
             using (Aes aes = Aes.Create())
             {
+                aes.IV = ivBytes;
                 aes.Key = keyBytes;
-                aes.Mode =model;
+                aes.Mode = model;
                 aes.Padding = padding;
 
                 using (var decryptor = aes.CreateDecryptor())
