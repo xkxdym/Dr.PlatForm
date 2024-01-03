@@ -157,6 +157,7 @@ namespace Dr.Common.Excel.NPOI
                     }
                 }
                 ExcelObj.Write(stream);
+                stream.Seek(0, SeekOrigin.Begin);
             }
             finally
             {
@@ -258,7 +259,20 @@ namespace Dr.Common.Excel.NPOI
                 while (rows.MoveNext())
                 {
                     //替换指定文本标签 格式:[Text]
-                    HSSFRow row = (HSSFRow)rows.Current;
+                    var item = rows.Current;
+                    IRow row = null;
+                    if (item is HSSFRow hRow)
+                    {
+                        row = hRow;
+                    }
+                    if (item is XSSFRow xRow)
+                    {
+                        row = xRow;
+                    }
+                    if (row == null)
+                    {
+                        continue;
+                    }
                     //遍历单元格
                     for (int i = 0; i < row.LastCellNum; i++)
                     {
@@ -297,11 +311,10 @@ namespace Dr.Common.Excel.NPOI
         /// <summary>
         /// 工作表初始化
         /// </summary>
-        private bool InitDataRow(int sheetIndex, out int rowIndex, out HSSFRow row)
+        private bool InitDataRow(int sheetIndex, out int rowIndex, out IRow row)
         {
             //输出数据行 开始位置标识:{RowData}
             var sheet = ExcelObj.GetSheetAt(sheetIndex);
-            DataTable dt = DataSource.Tables[sheetIndex];
 
             //获取数据起始行
             rowIndex = 0;
@@ -313,7 +326,19 @@ namespace Dr.Common.Excel.NPOI
             while (rows.MoveNext())
             {
                 //当前行
-                row = (HSSFRow)rows.Current;
+                var item = rows.Current;
+                if (item is HSSFRow hRow)
+                {
+                    row = hRow;
+                }
+                if (item is XSSFRow xRow)
+                {
+                    row = xRow;
+                }
+                if (row == null)
+                {
+                    continue;
+                }
                 for (int i = 0; i < row.LastCellNum; i++)
                 {
                     try
@@ -365,7 +390,7 @@ namespace Dr.Common.Excel.NPOI
                 var sheet = ExcelObj.GetSheetAt(sheetIndex);
                 DataTable dt = DataSource.Tables[sheetIndex];
                 int rowIndex;
-                HSSFRow row;
+                IRow row;
                 bool isDataRow = InitDataRow(sheetIndex, out rowIndex, out row);
 
                 if (isDataRow)

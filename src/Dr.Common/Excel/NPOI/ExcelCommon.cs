@@ -20,6 +20,7 @@
 
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,9 +68,21 @@ namespace Dr.Common.Excel.NPOI
                     case CellType.Formula:
                         try
                         {
-                            HSSFFormulaEvaluator e = new HSSFFormulaEvaluator(cell.Sheet.Workbook);
-                            e.EvaluateInCell(cell);
-                            result = cell.ToString();
+                            IFormulaEvaluator e = null;
+
+                            if (cell is HSSFCell)
+                            {
+                                e = new HSSFFormulaEvaluator(cell.Sheet.Workbook);
+                            }
+                            if (cell is XSSFCell)
+                            {
+                                e = new XSSFFormulaEvaluator(cell.Sheet.Workbook);
+                            }
+                            if (e != null)
+                            {
+                                e.EvaluateInCell(cell);
+                                result = cell.ToString();
+                            }
                         }
                         catch
                         {
